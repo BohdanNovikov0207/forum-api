@@ -3,7 +3,7 @@ import {
     getPostByIdHandler,
     getPostsHandler,
     createPostHandler
-} from '../handler/post.js';
+} from '../transport/handler/post.js';
 
 export const postRouter = Router()
 
