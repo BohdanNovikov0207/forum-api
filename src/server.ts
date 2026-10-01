@@ -1,13 +1,20 @@
 import express from 'express'
-import { postRouter } from './router/post.js'
+import { createPostRouter } from './router/post.js'
+import { createPostRepository } from './repository/post.js'
+import { createPostService } from './service/post.js'
+import { createPostHandler } from './transport/handler/post.js'
 
 const HOST = 'localhost'
 const PORT = 8000
 
 const app = express()
 
-app.use(express.json())
+const postRepository = createPostRepository()
+const postService = createPostService(postRepository)
+const postHandler = createPostHandler(postService)
+const postRouter = createPostRouter(postHandler)
 
+app.use(express.json())
 app.use('/', postRouter)
 
 app.listen(PORT, HOST, () => {
