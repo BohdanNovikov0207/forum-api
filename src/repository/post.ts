@@ -1,3 +1,5 @@
+import type { CreatePostRequest } from "../transport/dto/requests.js"
+
 let posts = [
   {
     id: 0,
@@ -22,7 +24,7 @@ let posts = [
   }
 ]
 
-export function getById(id) {
+export function getById(id: number) {
   const post = posts.find((p) => {
     return p.id === id
   })
@@ -31,7 +33,7 @@ export function getById(id) {
 }
 
 
-export function getAll(take, category){
+export function getAll(take: string, category: string){
     let selectedPosts = [...posts]
 
     if (category) {
@@ -49,7 +51,7 @@ export function getAll(take, category){
     return selectedPosts.slice(0, takeNumber)
 }
 
-export function addPost(newPostData) {
+export function addPost(newPostData: CreatePostRequest) {
   return new Promise(function (resolve) {
     const createdPost = {
       id: posts.length + 1,
