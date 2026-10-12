@@ -1,7 +1,8 @@
 import type { Post } from "./entity.ts"
+import type { CreatePostInput } from "../../service/post.types.js"
 
 export interface PostRepository{
-    getAll: (take?: number, category?: string) => Post[],
-    createPost: (post: Post) => Promise<Post>,
-    getPostById: (id: number) => Post | undefined
+    getPostById(id: number): Promise<Post | undefined>
+    getAll(take?: number, category?: string): Promise<Post[]>
+    createPost(newPostData: CreatePostInput): Promise<Post>
 }

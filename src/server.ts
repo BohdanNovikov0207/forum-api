@@ -3,13 +3,14 @@ import { createPostRouter } from './router/post.js'
 import { createPostRepository } from './repository/post.js'
 import { createPostService } from './service/post.js'
 import { createPostHandler } from './transport/handler/post.js'
+import { db } from './prisma/db.js'
 
 const HOST = 'localhost'
 const PORT = 8000
 
 const app = express()
 
-const postRepository = createPostRepository()
+const postRepository = createPostRepository(db)
 const postService = createPostService(postRepository)
 const postHandler = createPostHandler(postService)
 const postRouter = createPostRouter(postHandler)
