@@ -1,69 +1,68 @@
 import type { CreatePostInput } from "../service/post.types.js"
 import type { Post } from "../domain/post/entity.js"
 
-export function createPostRepository(){
-  let posts = [
-    {
-      id: 0,
-      title: 'First post',
-      content: '4134gfdg5435',
-      author: 'cat',
-      category: 'general'
-    },
-    {
-      id: 1,
-      title: 'Second post',
-      content: 'hytuytjgf',
-      author: 'dog',
-      category: 'programming'
-    },
-    {
-      id: 2,
-      title: 'Third post',
-      content: 'njhgjytryh',
-      author: 'meowdy',
-      category: 'programming'
+type Database = typeof import("../prisma/db.ts").db
+
+export function createPostRepository(database: Database){
+  async function getPostById(id: number): Promise<Post | undefined> {
+
+    const post = await database.orm.public.Post.where({ id: id}).first()
+
+    if (!post) return undefined
+
+    return {
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      author: post.author,
+      category: post.category
     }
-  ]
-
-  function getPostById(id: number) {
-    const post = posts.find((p) => {
-      return p.id === id
-    })
-
-    return post
   }
 
 
-  function getAll(take?: number, category?: string){
-      let selectedPosts = [...posts]
+  async function getAll(take?: number, category?: string): Promise<Post[]>{
+      let query = database.orm.public.Post.orderBy((post: any) => post.id.asc())
 
       if (category) {
-          selectedPosts = selectedPosts.filter((post) => {
-              return post.category === category
-          })
+      query = query.where({ category: category })
       }
 
-      if (take === undefined) {
-          return selectedPosts
+      if (!take) {
+      const posts = await query.all()
+      return posts.map((post: any) => ({
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        author: post.author,
+        category: post.category
+        }))
       }
 
-      return selectedPosts.slice(0, take)
+      const posts = await query.limit(take).all()
+      return posts.map((post: any) => ({
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        author: post.author,
+        category: post.category
+      }))
   }
 
-  function createPost(newPostData: CreatePostInput) {
-    return new Promise<Post>(function (resolve) {
-      const createdPost = {
-        id: posts.length + 1,
+  async function createPost(newPostData: CreatePostInput): Promise<Post> {
+      const post = await database.orm.public.Post.create({
         title: newPostData.title,
         content: newPostData.content,
         author: newPostData.author,
         category: newPostData.category
+      })
+    
+      return {
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        author: post.author,
+        category: post.category
       }
-      posts.push(createdPost)
-      resolve(createdPost)
-    })
-  }
-
-  return {getPostById, getAll, createPost, posts}
+    }
+  return { getPostById, getAll, createPost }
 }

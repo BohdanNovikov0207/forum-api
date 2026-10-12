@@ -1,18 +1,18 @@
-import type { PostRepository } from '../domain/post/repository.js'
-import { createPostRepository } from '../repository/post.js'
-import type { CreatePostInput } from './post.types.js'
+import type { PostRepository } from "../domain/post/repository.js"
+import type { CreatePostInput, PostService } from "./post.types.js"
 
-export function createPostService(repository: PostRepository){
+export function createPostService(repository: PostRepository): PostService {
   function getAllPosts(take?: number, category?: string) {
     return repository.getAll(take, category)
   }
-  
+
   function getPostById(id: number) {
     return repository.getPostById(id)
-  }   
-  
-  function createPost(postData: CreatePostInput) {
-    return repository.createPost(postData)
   }
-  return {getAllPosts, getPostById, createPost}
+
+  function createPost(newPostData: CreatePostInput) {
+    return repository.createPost(newPostData)
+  }
+
+  return { getAllPosts, getPostById, createPost }
 }

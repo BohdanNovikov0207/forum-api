@@ -3,7 +3,6 @@ import type { CreatePostRequest } from "../dto/requests.js"
 import type { ErrorResponse } from "../dto/errors.js"
 import type { PostResponse } from "../dto/responses.js"
 import type { PostService } from "../../service/post.types.js"
-import { createPostRepository } from "../../repository/post.js"
 
 export function createPostHandler(service: PostService){
     async function getPostsHandler(
@@ -24,7 +23,7 @@ export function createPostHandler(service: PostService){
     
         const categoryStr = typeof category === "string" ? category : undefined
 
-        const posts = service.getAllPosts(takeNumber, categoryStr)
+        const posts = await service.getAllPosts(takeNumber, categoryStr)
         res.status(200).json(posts)
     }
     
@@ -46,7 +45,7 @@ export function createPostHandler(service: PostService){
             return
         }
     
-        const post = service.getPostById(postId)
+        const post = await service.getPostById(postId)
     
         if (!post) {
             res.status(404).json({ok: false, description: 'post not found'})
@@ -69,7 +68,7 @@ export function createPostHandler(service: PostService){
     
         try{
             const newPost = await service.createPost({
-                id: createPostRepository().posts.length + 1,
+                id: 0,
                 title: title,
                 content: content,
                 author: author,
