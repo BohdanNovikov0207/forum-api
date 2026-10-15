@@ -8,7 +8,7 @@ export function PostCard(props: PostCardProps) {
   const { post } = props
   return (
     <div className="post-card">
-      <div className="post-meta">
+      <div>
         <span className="post-category">{post.category}</span>
         <span className="post-author">{post.author}</span>
       </div>

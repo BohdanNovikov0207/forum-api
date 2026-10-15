@@ -56,39 +56,44 @@ export function createPostHandler(service: PostService){
     }
     
     async function createPostHandler(
-        req: Request<{}, {}, CreatePostRequest>,
+        req: Request<{}, {}, any>,
         res: Response<PostResponse | ErrorResponse>
     ) {
         const { title, content, author, category } = req.body
     
-        if(typeof title !== "string" || typeof content !== "string" || !title.trim() || !content.trim()) {
-            res.status(422).json({ok: false, description: "Validation error"})
+        if (
+            typeof title !== "string" || 
+            typeof content !== "string" || 
+            typeof author !== "string" ||
+            typeof category !== "string" ||
+            !title.trim() || 
+            !content.trim() || 
+            !author.trim() ||
+            !category.trim()
+        ) {
+            res.status(422).json({ok: false, description: "Validation error: invalid fields"})
             return
         }
     
-        try{
+        try {
             const newPost = await service.createPost({
                 id: 0,
-                title: title,
-                content: content,
-                author: author,
-                category: category
+                title: title.trim(),
+                content: content.trim(),
+                author: author.trim(),
+                category: category.trim()
             })
-            if (!newPost) {
-                res.status(500).json({ ok: false, description: "Failed to create post" })
-                return
-            }
-        
+            
             res.status(201).json(newPost)
         } 
-        catch(error){
-            let errorMessage = "Unknown error"
-            if (error instanceof Error) {
-                errorMessage = error.message
+        catch(error: any) {
+            if (error.message === "POST_ALREADY_EXISTS") {
+                res.status(409).json({ ok: false, description: "Post with this title already exists" })
+                return
             }
-            res.status(500).json({ok: false, description: `${errorMessage}`})
-            return
+            res.status(500).json({ ok: false, description: error.message || "Internal server error" })
         }
     }
+    
     return { getPostsHandler, getPostByIdHandler, createPostHandler }
 }

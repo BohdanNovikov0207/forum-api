@@ -3,7 +3,7 @@ import type { CreatePostInput, PostService } from "./post.types.js"
 
 export function createPostService(repository: PostRepository): PostService {
   function getAllPosts(take?: number, category?: string) {
-    return repository.getAll(take, category)
+    return repository.getAllPosts(take, category)
   }
 
   function getPostById(id: number) {

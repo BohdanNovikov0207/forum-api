@@ -1,68 +1,69 @@
-import type { CreatePostInput } from "../service/post.types.js"
+import { isStructuredError } from "@prisma/orm-postgres/utils"
 import type { Post } from "../domain/post/entity.js"
+import type { CreatePostInput, PostWithCategory } from "../service/post.types.js"
 
 type Database = typeof import("../prisma/db.ts").db
 
-export function createPostRepository(database: Database){
-  async function getPostById(id: number): Promise<Post | undefined> {
+export function createPostRepository(database: Database) {
+  async function getAllPosts(take?: number, categoryName?: string): Promise<PostWithCategory[]> {
+    let categoryId: number | undefined = undefined
 
-    const post = await database.orm.public.Post.where({ id: id}).first()
-
-    if (!post) return undefined
-
-    return {
-      id: post.id,
-      title: post.title,
-      content: post.content,
-      author: post.author,
-      category: post.category
-    }
-  }
-
-
-  async function getAll(take?: number, category?: string): Promise<Post[]>{
-      let query = database.orm.public.Post.orderBy((post: any) => post.id.asc())
-
+    if (categoryName) {
+      const category = await database.orm.public.Category
+        .where({ name: categoryName })
+        .first()
+      
       if (category) {
-      query = query.where({ category: category })
-      }
-
-      if (!take) {
-      const posts = await query.all()
-      return posts.map((post: any) => ({
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        author: post.author,
-        category: post.category
-        }))
-      }
-
-      const posts = await query.limit(take).all()
-      return posts.map((post: any) => ({
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        author: post.author,
-        category: post.category
-      }))
-  }
-
-  async function createPost(newPostData: CreatePostInput): Promise<Post> {
-      const post = await database.orm.public.Post.create({
-        title: newPostData.title,
-        content: newPostData.content,
-        author: newPostData.author,
-        category: newPostData.category
-      })
-    
-      return {
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        author: post.author,
-        category: post.category
+        categoryId = category.id
+      } else {
+        return []
       }
     }
-  return { getPostById, getAll, createPost }
+
+    let query = database.orm.public.Post.include("category").orderBy((p: any) => p.id.asc())
+
+    if (categoryId !== undefined) {
+      query = database.orm.public.Post
+        .where({ categoryId })
+        .include("category")
+        .orderBy((p: any) => p.id.asc())
+    }
+
+    if (!take) {
+      return await query.all()
+    }
+    return await query.limit(take).all()
+  }
+
+  async function getPostById(id: number): Promise<PostWithCategory | null> {
+    return await database.orm.public.Post.where({ id }).include("category").first()
+  }
+
+  async function createPost(postData: { title: string; content: string; author: string; category: string }): Promise<Post> {
+    try {
+      const { category: categoryName, ...fields } = postData
+
+      let category = await database.orm.public.Category
+        .where({ name: categoryName })
+        .first()
+
+      if (!category) {
+        category = await database.orm.public.Category.create({ name: categoryName })
+      }
+
+      const post = await database.orm.public.Post.create({
+        ...fields,
+        categoryId: category.id
+      })
+
+      return await database.orm.public.Post.where({ id: post.id }).include("category").first() as Post
+    } catch (error) {
+      if (error instanceof Error && "sqlState" in error && error.sqlState === "23505") {
+        throw new Error("POST_ALREADY_EXISTS")
+      }
+      throw error
+    }
+  }
+
+  return { getAllPosts, getPostById, createPost }
 }
