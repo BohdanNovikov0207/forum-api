@@ -8,6 +8,12 @@ import { createCategoryRepository } from './repository/category.js'
 import { createCategoryService } from './service/category.js'
 import { createCategoryHandler } from './transport/handler/category.js'
 import { createCategoryRouter } from './router/category.js'
+import { createUserRepository } from './repository/user.js'
+import { createAuthService } from './service/user/user.js'
+import { createUserHandler } from './transport/handler/user/user.js'
+import { hashPassword, verifyPassword } from "./lib/password.js"
+import { createUserRouter } from './router/user.js'
+import { signAccessToken } from "./lib/jwt.js"
 
 const HOST = 'localhost'
 const PORT = 8000
@@ -18,14 +24,21 @@ const postRepository = createPostRepository(db)
 const postService = createPostService(postRepository)
 const postHandler = createPostHandler(postService)
 const postRouter = createPostRouter(postHandler)
+
 const categoryRepo = createCategoryRepository(db)
 const categoryService = createCategoryService(categoryRepo)
 const categoryHandler = createCategoryHandler(categoryService)
 const categoryRouter = createCategoryRouter(categoryHandler)
 
+const userRepository = createUserRepository(db)
+const userService = createAuthService(userRepository, { hash: hashPassword, verify: verifyPassword}, { signAccessToken})
+const userHandler = createUserHandler(userService)
+const userRouter = createUserRouter(userHandler)
+
 app.use(express.json())
 app.use('/', postRouter)
 app.use('/categories', categoryRouter)
+app.use("/auth", userRouter)
 
 app.listen(PORT, HOST, () => {
     console.log(`Server running on http://${HOST}:${PORT}`)

@@ -2,11 +2,10 @@ import type { Category } from "../domain/category/entity.js"
 import type { Post } from "../domain/post/entity.js"
 
 export interface CreatePostInput {
-  id: number
   title: string
   content: string
-  author: string
-  categoryId: number
+  authorId: number
+  category: string
 }
 
 export type PostWithCategory = Post & { category: Category};
