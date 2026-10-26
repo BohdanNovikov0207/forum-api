@@ -20,12 +20,13 @@ export function createPostRepository(database: Database) {
       }
     }
 
-    let query = database.orm.public.Post.include("category").orderBy((p: any) => p.id.asc())
+    let query = database.orm.public.Post.include("category").include("author").orderBy((p: any) => p.id.asc())
 
     if (categoryId !== undefined) {
       query = database.orm.public.Post
         .where({ categoryId })
         .include("category")
+        .include("author")
         .orderBy((p: any) => p.id.asc())
     }
 
@@ -36,10 +37,10 @@ export function createPostRepository(database: Database) {
   }
 
   async function getPostById(id: number): Promise<PostWithCategory | null> {
-    return await database.orm.public.Post.where({ id }).include("category").first()
+    return await database.orm.public.Post.where({ id }).include("category").include("author").first()
   }
 
-  async function createPost(postData: { title: string; content: string; author: string; category: string }): Promise<Post> {
+  async function createPost(postData: { title: string; content: string; authorId: number; category: string }): Promise<Post> {
     try {
       const { category: categoryName, ...fields } = postData
 
@@ -56,7 +57,7 @@ export function createPostRepository(database: Database) {
         categoryId: category.id
       })
 
-      return await database.orm.public.Post.where({ id: post.id }).include("category").first() as Post
+      return await database.orm.public.Post.where({ id: post.id }).include("category").include("author").first() as Post
     } catch (error) {
       if (error instanceof Error && "sqlState" in error && error.sqlState === "23505") {
         throw new Error("POST_ALREADY_EXISTS")

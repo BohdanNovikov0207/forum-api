@@ -59,16 +59,17 @@ export function createPostHandler(service: PostService){
         req: Request<{}, {}, any>,
         res: Response<PostResponse | ErrorResponse>
     ) {
-        const { title, content, author, category } = req.body
+        const { title, content, authorId, category } = req.body
     
         if (
             typeof title !== "string" || 
             typeof content !== "string" || 
-            typeof author !== "string" ||
+            typeof authorId !== "number" ||
             typeof category !== "string" ||
             !title.trim() || 
             !content.trim() || 
-            !author.trim() ||
+            !Number.isInteger(authorId) ||
+            authorId <= 0 ||
             !category.trim()
         ) {
             res.status(422).json({ok: false, description: "Validation error: invalid fields"})
@@ -77,10 +78,9 @@ export function createPostHandler(service: PostService){
     
         try {
             const newPost = await service.createPost({
-                id: 0,
                 title: title.trim(),
                 content: content.trim(),
-                author: author.trim(),
+                authorId,
                 category: category.trim()
             })
             
