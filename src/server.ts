@@ -13,8 +13,10 @@ import { createAuthService } from './service/user/user.js'
 import { createUserHandler } from './transport/handler/user/user.js'
 import { hashPassword, verifyPassword } from "./lib/password.js"
 import { createUserRouter } from './router/user.js'
-import { signAccessToken } from "./lib/jwt.js"
+import { signAccessToken, signRefreshToken, verifyAccessToken, verifyRefreshToken } from "./lib/jwt.js"
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import { createRequireAuth } from './transport/middlewares/require-auth.js'
 
 const HOST = 'localhost'
 const PORT = 8000
@@ -24,7 +26,8 @@ const app = express()
 const postRepository = createPostRepository(db)
 const postService = createPostService(postRepository)
 const postHandler = createPostHandler(postService)
-const postRouter = createPostRouter(postHandler)
+const requireAuth = createRequireAuth(verifyAccessToken)
+const postRouter = createPostRouter(postHandler, requireAuth)
 
 const categoryRepo = createCategoryRepository(db)
 const categoryService = createCategoryService(categoryRepo)
@@ -32,15 +35,21 @@ const categoryHandler = createCategoryHandler(categoryService)
 const categoryRouter = createCategoryRouter(categoryHandler)
 
 const userRepository = createUserRepository(db)
-const userService = createAuthService(userRepository, { hash: hashPassword, verify: verifyPassword}, { signAccessToken})
+const userService = createAuthService(userRepository, 
+    { hash: hashPassword, verify: verifyPassword}, 
+    { signAccessToken, signRefreshToken},
+    { verifyAccessToken, verifyRefreshToken}
+)
 const userHandler = createUserHandler(userService)
-const userRouter = createUserRouter(userHandler)
+const userRouter = createUserRouter(userHandler, requireAuth)
 
 app.use(cors({
     origin: "http://localhost:5173"
 }))
 
+app.use(cookieParser())
 app.use(express.json())
+
 app.use('/', postRouter)
 app.use('/categories', categoryRouter)
 app.use("/auth", userRouter)
