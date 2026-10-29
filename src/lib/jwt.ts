@@ -51,7 +51,7 @@ export function verifyRefreshToken(token: string): number{
             ]
         } 
     )
-        if (typeof payload === "string" || typeof payload.sub !== "string"  || payload.type !== "refresh"){
+        if (typeof payload === "string" || typeof payload.sub !== "string"){
             throw new Error()
         }
         const userId = Number(payload.sub)
