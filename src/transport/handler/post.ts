@@ -59,7 +59,8 @@ export function createPostHandler(service: PostService){
         req: Request<{}, {}, any>,
         res: Response<PostResponse | ErrorResponse>
     ) {
-        const { title, content, authorId, category } = req.body
+        const { title, content, category } = req.body
+        const { authorId } = res.locals.userId
     
         if (
             typeof title !== "string" || 
