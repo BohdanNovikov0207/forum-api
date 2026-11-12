@@ -1,6 +1,7 @@
 import './App.css'
 import { Header } from './components/Header.tsx'
 import { useGetAllPostsQuery } from './api/baseApi.ts'
+import { RegisterForm } from './components/RegisterForm.tsx';
 
 function App() {
   const { data: posts = [], isLoading, isError } = useGetAllPostsQuery();
@@ -8,7 +9,7 @@ function App() {
   return (
     <div className="app-container">
       <Header title="App title" />
-
+      <RegisterForm />
       { isLoading && 
         <h1>Загрузка</h1>
       }
