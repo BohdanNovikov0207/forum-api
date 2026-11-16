@@ -10,5 +10,6 @@ export function createUserRouter(handler: UserHandler, requireAuth: RequestHandl
     router.post("/login", handler.login)
     router.post('/refresh', handler.refresh)
     router.get('/me', requireAuth, handler.me)
+    router.post('/logout', handler.logout)
     return router
 }

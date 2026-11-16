@@ -1,4 +1,5 @@
 import express from 'express'
+import 'temporal-polyfill/global'
 import { createPostRouter } from './router/post.js'
 import { createPostRepository } from './repository/post.js'
 import { createPostService } from './service/post.js'
@@ -13,10 +14,11 @@ import { createAuthService } from './service/user/user.js'
 import { createUserHandler } from './transport/handler/user/user.js'
 import { hashPassword, verifyPassword } from "./lib/password.js"
 import { createUserRouter } from './router/user.js'
-import { signAccessToken, signRefreshToken, verifyAccessToken, verifyRefreshToken } from "./lib/jwt.js"
+import { signAccessToken, signRefreshToken, verifyAccessToken, verifyRefreshToken, hashRefreshToken } from "./lib/jwt.js"
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { createRequireAuth } from './transport/middlewares/require-auth.js'
+import { createRefreshSessionRepository } from './repository/refresh-session.js'
 
 const HOST = 'localhost'
 const PORT = 8000
@@ -34,11 +36,14 @@ const categoryService = createCategoryService(categoryRepo)
 const categoryHandler = createCategoryHandler(categoryService)
 const categoryRouter = createCategoryRouter(categoryHandler)
 
+const sessionRepository = createRefreshSessionRepository(db)
 const userRepository = createUserRepository(db)
 const userService = createAuthService(userRepository, 
     { hash: hashPassword, verify: verifyPassword}, 
     { signAccessToken, signRefreshToken},
-    { verifyAccessToken, verifyRefreshToken}
+    { verifyAccessToken, verifyRefreshToken},
+    { hash: hashRefreshToken},
+    sessionRepository,
 )
 const userHandler = createUserHandler(userService)
 const userRouter = createUserRouter(userHandler, requireAuth)
