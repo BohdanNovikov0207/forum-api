@@ -17,5 +17,9 @@ export interface UserHandler{
     me: (
         req: Request,
         res: Response
-    ) => Promise<void>
+    ) => Promise<void>,
+    logout: (
+        req: Request,
+        res: Response
+    ) => Promise<void>,
 }
