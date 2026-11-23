@@ -69,6 +69,27 @@ export function createUserHandler(service: UserService): UserHandler{
                 res.status(500).json({message: "Internal server error"})
             }
         },
+        async logout(req, res){
+            try{
+                const token = req.cookies?.refreshToken
+                await service.logout(typeof token === "string" ? token : undefined)
+                res.clearCookie("accessToken", {
+                    httpOnly: true,
+                    secure: secure,
+                    sameSite: "lax",
+                    path: '/'
+                })
+                res.clearCookie("refreshToken", {
+                    httpOnly: true,
+                    secure: secure,
+                    sameSite: "lax",
+                    path: '/auth'
+                })
+                res.status(200).json("Logged out!")
+            } catch{
+                res.status(500).json("Internal server error")
+            }
+        },
         async me(req, res){
             try{
                 const userId = res.locals.userId

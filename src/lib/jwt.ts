@@ -1,5 +1,6 @@
 import "dotenv/config"
 import jwt from "jsonwebtoken"
+import { createHash, randomUUID } from "node:crypto"
 
 const secretAccess = process.env.JWT_ACCESS_SECRET as string
 const secretRefresh = process.env.JWT_REFRESH_SECRET as string
@@ -19,6 +20,7 @@ export function signRefreshToken(userId: number): string {
     return jwt.sign({}, secretRefresh, {
         algorithm: "HS256",
         subject: String(userId),
+        jwtid: randomUUID(),
         expiresIn: "7d"
     })
 }
@@ -60,4 +62,8 @@ export function verifyRefreshToken(token: string): number{
     catch(error){
         throw new Error("INVALID_REFRESH_TOKEN")
     }
+}
+
+export function hashRefreshToken(token: string): string{
+    return createHash("sha256").update(token).digest("hex")
 }
