@@ -1,15 +1,24 @@
 import './App.css'
 import { Header } from './components/Header.tsx'
-import { useGetAllPostsQuery } from './api/baseApi.ts'
-import { RegisterForm } from './components/RegisterForm.tsx';
+import { useGetAllPostsQuery, useGetMeQuery } from './api/baseApi.ts'
+import { RegisterForm } from './components/RegisterForm.tsx'
+import { LoginForm } from './components/LoginForm.tsx'
 
 function App() {
   const { data: posts = [], isLoading, isError } = useGetAllPostsQuery();
-
+  const { data: user, isLoading: isUserLoading, isError: isUserError } = useGetMeQuery()
   return (
     <div className="app-container">
       <Header title="App title" />
-      <RegisterForm />
+      { isUserLoading 
+        ? <p>Перевiряємо авторизацiю</p> 
+        : user 
+          ? <p>Ви авторизовані як {user.email}</p>
+          : <div>
+            <LoginForm />
+            <RegisterForm />
+          </div>
+      }
       { isLoading && 
         <h1>Загрузка</h1>
       }
