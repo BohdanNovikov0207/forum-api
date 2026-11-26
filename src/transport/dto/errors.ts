@@ -1,4 +1,4 @@
-export interface ErrorResponse{
-    ok: boolean;
-    description: string;
+export interface ErrorResponse {
+	ok: boolean;
+	description: string;
 }

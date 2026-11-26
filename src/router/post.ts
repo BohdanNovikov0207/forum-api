@@ -1,14 +1,16 @@
-import { Router } from 'express';
-import type { PostHandler } from '../transport/handler/post.types.js';
-import type { RequestHandler } from 'express';
-import { createRequireAuth } from "../transport/middlewares/require-auth";
+import type { RequestHandler } from "express";
+import { Router } from "express";
+import type { PostHandler } from "../transport/handler/post.types.js";
 
-export function createPostRouter(handler: PostHandler, requireAuth: RequestHandler){
-    const postRouter = Router()
+export function createPostRouter(
+	handler: PostHandler,
+	requireAuth: RequestHandler,
+) {
+	const postRouter = Router();
 
-    postRouter.get('/posts', requireAuth, handler.getPostsHandler);
-    postRouter.get('/posts/:id', handler.getPostByIdHandler);
-    postRouter.post('/posts/create', handler.createPostHandler);
+	postRouter.get("/", requireAuth, handler.getPostsHandler);
+	postRouter.get("/:id", handler.getPostByIdHandler);
+	postRouter.post("/create", requireAuth, handler.createPostHandler);
 
-    return postRouter
+	return postRouter;
 }

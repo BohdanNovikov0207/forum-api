@@ -1,11 +1,11 @@
-import { Router } from "express"
+import { Router } from "express";
 
 export function createCategoryRouter(handler: any) {
-  const router = Router()
+	const router = Router();
 
-  router.get("/", handler.getCategoriesHandler)
-  router.get("/:id", handler.getCategoryByIdHandler)
-  router.post("/", handler.createCategoryHandler)
+	router.get("/", handler.getCategoriesHandler);
+	router.get("/:id", handler.getCategoryByIdHandler);
+	router.post("/", handler.createCategoryHandler);
 
-  return router
+	return router;
 }

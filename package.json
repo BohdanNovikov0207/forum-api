@@ -1,39 +1,40 @@
 {
-  "name": "forum-api",
-  "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "test": "npx tsc --noEmit",
-    "server": "tsx ./src/server.ts",
-    "contract:emit": "prisma contract emit",
-    "db:init": "prisma db init",
-    "db:update": "prisma db update",
-    "db:verify": "prisma db verify"
-  },
-  "dependencies": {
-    "@prisma/orm-postgres": "8.0.0-rc.11",
-    "@types/cookie-parser": "^1.4.10",
-    "@types/jsonwebtoken": "^9.0.10",
-    "argon2": "^0.45.1",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.6",
-    "dotenv": "^18.0.7",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "temporal-polyfill": "^1.0.8",
-    "vite": "^8.3.4"
-  },
-  "devDependencies": {
-    "@prisma/cli-engine": "^0.6.2",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/node": "^26.6.3",
-    "prisma": "8.0.0-rc.15",
-    "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
-  }
+	"name": "forum-api",
+	"version": "1.0.0",
+	"description": "",
+	"license": "ISC",
+	"author": "",
+	"type": "module",
+	"main": "index.js",
+	"scripts": {
+		"test": "npx tsc --noEmit",
+		"server": "tsx ./src/server.ts",
+		"contract:emit": "prisma contract emit",
+		"db:init": "prisma db init",
+		"db:update": "prisma db update",
+		"db:verify": "prisma db verify"
+	},
+	"dependencies": {
+		"@biomejs/biome": "^2.6.8",
+		"@prisma/orm-postgres": "^8.0.0-rc.23",
+		"@types/cookie-parser": "^1.4.10",
+		"@types/jsonwebtoken": "^9.0.10",
+		"argon2": "^0.45.1",
+		"cookie-parser": "^1.4.7",
+		"cors": "^2.8.6",
+		"dotenv": "^18.0.7",
+		"express": "^5.2.1",
+		"jsonwebtoken": "^9.0.3",
+		"temporal-polyfill": "^1.0.8",
+		"vite": "^8.3.4"
+	},
+	"devDependencies": {
+		"@prisma/cli-engine": "^0.6.2",
+		"@types/cors": "^2.8.19",
+		"@types/express": "^5.0.6",
+		"@types/node": "^26.6.3",
+		"prisma": "^8.0.0-rc.33",
+		"tsx": "^4.23.15",
+		"typescript": "^7.0.2"
+	}
 }
