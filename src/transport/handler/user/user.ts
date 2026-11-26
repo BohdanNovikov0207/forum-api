@@ -32,7 +32,9 @@ export function createUserHandler(service: UserService): UserHandler {
 				});
 				res.status(201).json(user);
 			} catch (error) {
-				res.status(500).json(error);
+				console.error("Register error:", error);
+    			const message = error instanceof Error ? error.message : "Internal server error";
+    			res.status(500).json({ message });
 			}
 		},
 		async login(req, res) {
@@ -49,7 +51,9 @@ export function createUserHandler(service: UserService): UserHandler {
 				console.log(result.accessToken);
 				res.status(200).json(result.user);
 			} catch (error) {
-				res.status(500).json(error);
+				console.error("Login error:", error);
+    			const message = error instanceof Error ? error.message : "Internal server error";
+    			res.status(500).json({ message });
 			}
 		},
 		async refresh(req, res) {

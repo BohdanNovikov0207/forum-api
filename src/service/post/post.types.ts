@@ -1,5 +1,5 @@
-import type { Category } from "../domain/category/entity.js";
-import type { Post } from "../domain/post/entity.js";
+import type { Category } from "../../domain/category/entity.js";
+import type { Post } from "../../domain/post/entity.js";
 
 export interface CreatePostInput {
 	title: string;

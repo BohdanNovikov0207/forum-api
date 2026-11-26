@@ -17,9 +17,10 @@ export function createApp(config: Config) {
     app.use(cookieParser());
     app.use(express.json());
 
-    app.use(ROUTES.PRODUCTS, routers.postRouter);
+    app.use(ROUTES.POSTS, routers.postRouter);
     app.use(ROUTES.CATEGORIES, routers.categoryRouter);
     app.use(ROUTES.AUTH, routers.authRouter);
+    app.use("/", routers.commentRouter);
 
     return app
 }

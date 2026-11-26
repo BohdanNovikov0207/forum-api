@@ -22,7 +22,7 @@ function positiveInt(name: string, fallback: number): number {
 }
  
 export const config = {
-    port: positiveInt("PORT", 3000),
+    port: positiveInt("PORT", 8000),
     corsOrigin: process.env.CORS_ORIGIN ?? "http://localhost:5173",
     databaseUrl: required("DATABASE_URL"),
     passwordPepper: Buffer.from(required("PASSWORD_PEPPER"), "hex"),

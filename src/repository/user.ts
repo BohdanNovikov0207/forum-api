@@ -5,7 +5,7 @@ export function createUserRepository(database: Database): UserRepository {
 	return {
 		async createUser(data) {
 			try {
-				return await database.orm.public.User.create(data);
+				return await database.orm.public.user.create(data);
 			} catch (error) {
 				if (
 					error instanceof Error &&
@@ -18,10 +18,10 @@ export function createUserRepository(database: Database): UserRepository {
 			}
 		},
 		async getByEmail(email) {
-			return await database.orm.public.User.where({ email }).first();
+			return await database.orm.public.user.where({ email }).first();
 		},
 		async getById(id) {
-			return await database.orm.public.User.where({ id }).first();
+			return await database.orm.public.user.where({ id }).first();
 		},
 	};
 }

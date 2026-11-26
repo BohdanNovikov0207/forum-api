@@ -3,9 +3,8 @@ import type { Post } from "../domain/post/entity.js";
 import type {
 	CreatePostInput,
 	PostWithCategory,
-} from "../service/post.types.js";
-
-type Database = typeof import("../prisma/db.ts").db;
+} from "../service/post/post.types.js";
+import type { Database } from "../prisma/db.js";
 
 export function createPostRepository(database: Database) {
 	async function getAllPosts(
@@ -15,7 +14,7 @@ export function createPostRepository(database: Database) {
 		let categoryId: number | undefined;
 
 		if (categoryName) {
-			const category = await database.orm.public.Category.where({
+			const category = await database.orm.public.category.where({
 				name: categoryName,
 			}).first();
 
@@ -26,12 +25,12 @@ export function createPostRepository(database: Database) {
 			}
 		}
 
-		let query = database.orm.public.Post.include("category")
+		let query = database.orm.public.post.include("category")
 			.include("author")
 			.orderBy((p: any) => p.id.asc());
 
 		if (categoryId !== undefined) {
-			query = database.orm.public.Post.where({ categoryId })
+			query = database.orm.public.post.where({ categoryId })
 				.include("category")
 				.include("author")
 				.orderBy((p: any) => p.id.asc());
@@ -44,7 +43,7 @@ export function createPostRepository(database: Database) {
 	}
 
 	async function getPostById(id: number): Promise<PostWithCategory | null> {
-		return await database.orm.public.Post.where({ id })
+		return await database.orm.public.post.where({ id })
 			.include("category")
 			.include("author")
 			.first();
@@ -59,22 +58,22 @@ export function createPostRepository(database: Database) {
 		try {
 			const { category: categoryName, ...fields } = postData;
 
-			let category = await database.orm.public.Category.where({
+			let category = await database.orm.public.category.where({
 				name: categoryName,
 			}).first();
 
 			if (!category) {
-				category = await database.orm.public.Category.create({
+				category = await database.orm.public.category.create({
 					name: categoryName,
 				});
 			}
 
-			const post = await database.orm.public.Post.create({
+			const post = await database.orm.public.post.create({
 				...fields,
 				categoryId: category.id,
 			});
 
-			return (await database.orm.public.Post.where({ id: post.id })
+			return (await database.orm.public.post.where({ id: post.id })
 				.include("category")
 				.include("author")
 				.first()) as Post;

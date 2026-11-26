@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { CommentWithAuthor } from "../../../src/domain/comment/entity";
 import type { Post } from "../../../src/domain/post/entity";
 
 interface RegisterResponse {
@@ -15,9 +16,20 @@ interface LoginRequest {
 	email: string;
 	password: string;
 }
+
 interface UserResponse {
 	id: number;
 	email: string;
+}
+
+interface CreateCommentRequest {
+	postId: number;
+	content: string;
+}
+
+interface DeleteCommentRequest {
+	commentId: number;
+	postId: number;
 }
 
 export const baseApi = createApi({
@@ -26,7 +38,7 @@ export const baseApi = createApi({
 		baseUrl: "http://localhost:8000",
 		credentials: "include",
 	}),
-	tagTypes: ["Me"],
+	tagTypes: ["Me", "Comments"],
 	endpoints: (builder) => ({
 		getAllPosts: builder.query<Post[], void>({
 			query: () => "/posts",
@@ -52,6 +64,25 @@ export const baseApi = createApi({
 			query: () => "/auth/me",
 			providesTags: ["Me"],
 		}),
+		getCommentsByPost: builder.query<CommentWithAuthor[], number>({
+			query: (postId) => `/posts/${postId}/comments`,
+			providesTags: ["Comments"],
+		}),
+		createComment: builder.mutation<CommentWithAuthor, CreateCommentRequest>({
+			query: ({ postId, content }) => ({
+				url: `/posts/${postId}/comments`,
+				method: "POST",
+				body: { content },
+			}),
+			invalidatesTags: ["Comments"],
+		}),
+		deleteComment: builder.mutation<void, DeleteCommentRequest>({
+			query: ({ commentId }) => ({
+				url: `/comments/${commentId}`,
+				method: "DELETE",
+			}),
+			invalidatesTags: ["Comments"],
+		}),
 	}),
 });
 
@@ -60,4 +91,7 @@ export const {
 	useRegisterMutation,
 	useLoginMutation,
 	useGetMeQuery,
+	useGetCommentsByPostQuery,
+	useCreateCommentMutation,
+	useDeleteCommentMutation,
 } = baseApi;

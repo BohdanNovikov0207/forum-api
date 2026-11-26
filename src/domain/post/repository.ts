@@ -1,7 +1,7 @@
 import type {
 	CreatePostInput,
 	PostWithCategory,
-} from "../../service/post.types.js";
+} from "../../service/post/post.types.js";
 import type { Post } from "./entity.ts";
 
 export interface PostRepository {

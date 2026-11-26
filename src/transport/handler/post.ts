@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import type { PostService } from "../../service/post.types.js";
+import type { PostService } from "../../service/post/post.types.js";
 import type { ErrorResponse } from "../dto/errors.js";
 import type { CreatePostRequest } from "../dto/requests.js";
 import type { PostResponse } from "../dto/responses.js";
@@ -64,7 +64,7 @@ export function createPostHandler(service: PostService) {
 		res: Response<PostResponse | ErrorResponse>,
 	) {
 		const { title, content, category } = req.body;
-		const { authorId } = res.locals.userId;
+		const authorId = Number(res.locals.userId);
 
 		if (
 			typeof title !== "string" ||

@@ -1,31 +1,41 @@
 // use prisma-8
 
-model User {
+model user {
   id       Int    @id @default(autoincrement())
   email    String @unique
   hashPassword String
 }
 
-model Post {
+model post {
   id        Int      @id @default(autoincrement())
   title     String
   content   String
   authorId Int
-  author User @relation(fields: [authorId], references: [id])
+  author user @relation(fields: [authorId], references: [id])
   categoryId Int
-  category  Category @relation(fields: [categoryId], references: [id])
+  category  category @relation(fields: [categoryId], references: [id])
 }
 
-model Category {
+model category {
   id Int @id @default(autoincrement())
   name String @unique
 }
 
-model RefreshSession {
+model refreshSession {
   id     Int          @id @default(autoincrement())
   userId  Int   
   tokenHash String @unique
   expiresAt DateTime 
   createdAt DateTime @default(now())
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade )
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade )
+}
+
+model comment {
+  id            Int        @id @default(autoincrement())
+  content       String
+  postId        Int
+  authorId      Int
+  createdAt     DateTime @default(now())
+  author user @relation(fields: [authorId], references: [id], onDelete: Cascade )
+  post post @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
